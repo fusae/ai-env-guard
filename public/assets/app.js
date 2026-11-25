@@ -54,7 +54,7 @@ function newAddress() {const pool=pools[$('state-select').value];address=pool[Ma
 function friendly(value) {return value && value !== 'Unknown' && value !== 'Unknown ISP' && value !== 'unknown' ? String(value) : t('unknownValue');}
 function detail(card) {
  const {ip,rtc,hardware:h,timezone,languages}=snapshot;
- if(card.id==='ip') return ip ? t('ipDetail',{ip:friendly(ip.ip),asn:friendly(ip.asn),org:friendly(ip.org),type:ip.ipType==='hosting'?(lang==='zh'?'托管网络':'Hosting'):ip.ipType==='isp'?(lang==='zh'?'互联网服务商':'ISP'):friendly(ip.ipType)}) : t('ipUnknownAdvice');
+ if(card.id==='ip') return ip ? t('ipDetail',{ip:friendly(ip.ip),asn:friendly(ip.asn),org:friendly(ip.org),type:ip.ipType==='hosting'?t('hostingType'):ip.ipType==='isp'?t('ispType'):friendly(ip.ipType)}) : t('ipUnknownAdvice');
  if(card.id==='rtc') return rtc.status!=='complete'?t('rtcUnknownAdvice'):card.extraIps.length?t('rtcDetail',{ips:card.extraIps.join(', ')}):t('rtcGoodDetail');
  if(card.id==='timezone') return t('timezoneDetail',{remote:friendly(ip?.timezone),local:friendly(timezone),languages:friendly(languages)});
  const data=t('hardwareDetail',{vendor:friendly(h.vendor),renderer:friendly(h.renderer),cores:h.cores||t('unknownValue'),webdriver:h.webdriver===true?t('yes'):h.webdriver===false?t('no'):t('unknownValue')});
