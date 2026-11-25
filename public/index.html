@@ -1,271 +1,36 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Account & Stripe Risk Scanner | Claude 防封与虚拟卡支付环境体检</title>
-  <meta name="description" content="3秒在线检测 Claude 封号原因、Stripe 绑卡拒付风险、机房 IP 属性、WebRTC 真实 IP 泄露与浏览器时区指纹污染。" />
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Env Guard — Network & Browser Diagnostics</title>
+<meta name="description" content="Check your IP, WebRTC, timezone, GPU and browser automation signals. Copy a privacy-safe report in English or Chinese.">
+<link rel="canonical" href="https://ai-env-guard.pages.dev/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="AI Env Guard">
+<meta property="og:title" content="Check your AI environment | AI Env Guard">
+<meta property="og:description" content="IP, WebRTC, timezone and hardware diagnostics. Understand the signals before you troubleshoot.">
+<meta property="og:url" content="https://ai-env-guard.pages.dev/"><meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:image" content="https://ai-env-guard.pages.dev/assets/social-cover.png"><meta property="og:image:secure_url" content="https://ai-env-guard.pages.dev/assets/social-cover.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1732"><meta property="og:image:height" content="908">
+<meta property="og:image:alt" content="Illustrative red 35 and green 100 environment scores, with IP, WebRTC, timezone and hardware checks.">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Check your AI environment | AI Env Guard"><meta name="twitter:description" content="Four browser and network checks. One privacy-safe report."><meta name="twitter:image" content="https://ai-env-guard.pages.dev/assets/social-cover.png"><meta name="twitter:image:alt" content="AI Env Guard: illustrative red and green diagnostic scores.">
+<meta name="theme-color" content="#080e19"><link rel="stylesheet" href="/assets/styles.css"><script type="module" src="/assets/app.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
-  <div class="max-w-4xl mx-auto px-4 py-8">
-    <!-- 顶部栏 -->
-    <header class="flex items-center justify-between border-b border-slate-800 pb-5 mb-8">
-      <div>
-        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium mb-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          AI Anti-Ban &amp; Stripe Guard
-        </div>
-        <h1 id="t-title" class="text-2xl md:text-3xl font-bold tracking-tight">AI 账号防封 &amp; Stripe 绑卡环境一键体检</h1>
-      </div>
-      <button onclick="toggleLang()" id="lang-btn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold border border-slate-700 transition">
-        EN / 中文
-      </button>
-    </header>
-
-    <!-- 总分仪表盘 -->
-    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div class="flex items-center gap-6">
-          <div id="score-ring" class="w-28 h-28 rounded-full border-4 border-slate-700 flex flex-col items-center justify-center bg-slate-950">
-            <span id="score-num" class="text-3xl font-extrabold text-slate-300">--</span>
-            <span class="text-xs text-slate-400 mt-0.5">/ 100</span>
-          </div>
-          <div>
-            <div id="verdict-badge" class="text-lg font-bold text-slate-200 mb-1">正在扫描底层网络与浏览器指纹...</div>
-            <p id="ip-summary" class="text-sm text-slate-400 font-mono">Checking Edge ASN &amp; WebRTC STUN...</p>
-          </div>
-        </div>
-        <button onclick="runFullScan()" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold transition shrink-0">
-          重新体检 / Re-scan
-        </button>
-      </div>
-    </section>
-
-    <!-- 四维诊断卡片与精准变现处方 -->
-    <section id="cards-container" class="space-y-4 mb-8"></section>
-
-    <!-- 转化倍增器：美区 Stripe 免税州账单地址生成器 -->
-    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-8">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-        <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            💳 美区 Stripe 免税州账单地址生成器（0% 消费税）
-          </h2>
-          <p class="text-xs text-slate-400 mt-1">绑定 Claude Pro / Cursor / Kiro / Google AI 订阅时，配合纯净美国静态住宅 IP + 浏览器无痕模式使用</p>
-        </div>
-        <div class="flex gap-2">
-          <select id="tax-state" onchange="genAddress()" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs">
-            <option value="OR">Oregon (俄勒冈 OR - 推荐)</option>
-            <option value="DE">Delaware (特拉华 DE)</option>
-            <option value="MT">Montana (蒙大拿 MT)</option>
-            <option value="NH">New Hampshire (新罕布什尔 NH)</option>
-          </select>
-          <button onclick="genAddress()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-medium border border-slate-700">换一批</button>
-        </div>
-      </div>
-      <div id="addr-box" class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono bg-slate-950 p-4 rounded-xl border border-slate-800"></div>
-    </section>
-
-    <!-- 终端开发者闭环引流 -->
-    <footer class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 text-xs text-slate-400 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-      <div>
-        <p class="font-semibold text-slate-200 mb-1">💻 网页满分但用 Claude Code / API 还是被封？</p>
-        <p>浏览器开了代理不代表终端走了代理。用开源脚本一键检查终端环境变量泄露：</p>
-      </div>
-      <a id="gh-link" href="/go/github?from=footer" target="_blank" rel="noopener" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-100 font-mono shrink-0 border border-slate-700">
-        ★ github.com/fusae/claude-env-check
-      </a>
-    </footer>
-  </div>
-
-  <div id="toast" class="fixed bottom-6 right-6 hidden bg-emerald-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg"></div>
-
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const refSource = urlParams.get('ref') || 'organic';
-    let lang = 'zh';
-
-    const TAX_FREE_POOL = {
-      OR: [
-        { street: '1120 SW 5th Ave', city: 'Portland', state: 'OR', zip: '97204' },
-        { street: '2450 Willamette St', city: 'Eugene', state: 'OR', zip: '97405' },
-        { street: '380 Center St NE', city: 'Salem', state: 'OR', zip: '97301' }
-      ],
-      DE: [
-        { street: '1209 Orange St', city: 'Wilmington', state: 'DE', zip: '19801' },
-        { street: '410 Federal St', city: 'Dover', state: 'DE', zip: '19901' }
-      ],
-      MT: [
-        { street: '201 W Main St', city: 'Missoula', state: 'MT', zip: '59802' },
-        { street: '316 N 26th St', city: 'Billings', state: 'MT', zip: '59101' }
-      ],
-      NH: [
-        { street: '900 Elm St', city: 'Manchester', state: 'NH', zip: '03101' },
-        { street: '107 Storrs St', city: 'Concord', state: 'NH', zip: '03301' }
-      ]
-    };
-
-    function showToast(text) {
-      const t = document.getElementById('toast');
-      t.textContent = text;
-      t.classList.remove('hidden');
-      setTimeout(() => t.classList.add('hidden'), 2600);
-    }
-
-    function copyCode(code, label) {
-      navigator.clipboard.writeText(code);
-      showToast(`已复制专属优惠码 ${code}！结账时粘贴立享折扣`);
-      fetch('/api/event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: `copy_${label}_${code}`, ref: refSource })
-      }).catch(() => {});
-    }
-
-    function genAddress() {
-      const st = document.getElementById('tax-state').value;
-      const list = TAX_FREE_POOL[st];
-      const pick = list[Math.floor(Math.random() * list.length)];
-      document.getElementById('addr-box').innerHTML = `
-        <div onclick="navigator.clipboard.writeText('${pick.street}');showToast('已复制街道地址')" class="cursor-pointer hover:text-emerald-400">Street: <strong class="text-slate-100">${pick.street}</strong> (点击复制)</div>
-        <div onclick="navigator.clipboard.writeText('${pick.city}');showToast('已复制城市')" class="cursor-pointer hover:text-emerald-400">City / State: <strong class="text-slate-100">${pick.city}, ${pick.state}</strong></div>
-        <div onclick="navigator.clipboard.writeText('${pick.zip}');showToast('已复制邮编')" class="cursor-pointer hover:text-emerald-400">ZIP Code: <strong class="text-emerald-400">${pick.zip}</strong></div>
-      `;
-    }
-
-    async function detectWebRTC() {
-      return new Promise((resolve) => {
-        const ips = new Set();
-        try {
-          const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-          pc.createDataChannel('');
-          pc.onicecandidate = (e) => {
-            if (!e.candidate) { pc.close(); resolve([...ips]); return; }
-            const match = e.candidate.candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
-            if (match) ips.add(match[1]);
-          };
-          pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => resolve([]));
-          setTimeout(() => { try { pc.close(); } catch(_){} resolve([...ips]); }, 1800);
-        } catch (_) { resolve([]); }
-      });
-    }
-
-    async function runFullScan() {
-      document.getElementById('verdict-badge').textContent = '正在扫描 ASN 属性与 WebRTC 通道...';
-      const [ipRes, rtcIps] = await Promise.all([
-        fetch('/api/ip-check').then(r => r.json()).catch(() => ({
-          ip: 'Unknown', asn: 'AS0', org: 'Unknown', country: 'US', timezone: 'America/Los_Angeles', isDatacenter: true, abuserScore: 'High'
-        })),
-        detectWebRTC()
-      ]);
-
-      let score = 100;
-      const cards = [];
-
-      // 1. 机房 ASN 与共享节点判定
-      const badIp = ipRes.isDatacenter || ipRes.isProxyOrVpn;
-      if (badIp) score -= 45;
-      cards.push({
-        level: badIp ? 'danger' : 'ok',
-        title: badIp ? '🔴 IP 原生度异常：识别为机房托管 / 共享代理段 (-45分)' : '🟢 IP 原生度良好：识别为住宅宽带 ISP',
-        detail: `当前出口 ${ipRes.ip} (${ipRes.asn} · ${ipRes.org}) | 类型: ${ipRes.ipType} | 风控评分: ${ipRes.abuserScore}`,
-        advice: badIp
-          ? 'Claude 与 Stripe 会直接拉黑 AWS/搬瓦工/机场共享段，导致新号秒封或虚拟卡拒付。建议更换独享「美国静态住宅 ISP 代理」：'
-          : '当前网络出口属于高信誉 ISP 段，如需多开矩阵号请确保一账号一独享静态住宅 IP：',
-        ctaHtml: `
-          <div class="flex flex-wrap items-center gap-2 mt-3">
-            <a href="/go/proxy?from=asn&ref=${encodeURIComponent(refSource)}" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition">
-              获取 Proxy-Seller 原生静态住宅 IP →
-            </a>
-            <button onclick="copyCode('GXQVUA_081067', 'proxyseller')" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-300 text-xs font-mono">
-              复制专属折扣码: GXQVUA_081067
-            </button>
-          </div>`
-      });
-
-      // 2. WebRTC 泄露判定
-      const leakedIps = rtcIps.filter(x => x !== ipRes.ip && !x.startsWith('10.') && !x.startsWith('192.168.') && !x.startsWith('172.'));
-      const hasRtcLeak = leakedIps.length > 0;
-      if (hasRtcLeak) score -= 30;
-      cards.push({
-        level: hasRtcLeak ? 'danger' : 'ok',
-        title: hasRtcLeak ? `🔴 WebRTC 真实 IP 裸奔泄露 (-30分)` : '🟢 WebRTC 通道安全：未发现公网 IP 侧漏',
-        detail: hasRtcLeak ? `STUN 探测到不一致的真实网络出口: ${leakedIps.join(', ')}` : '浏览器 STUN 响应与代理出口一致或已做隐私屏蔽',
-        advice: '普通浏览器装插件极易在底层泄露真实网卡与指纹。强烈建议用指纹浏览器建立防泄露隔离容器：',
-        ctaHtml: `
-          <div class="flex flex-wrap items-center gap-2 mt-3">
-            <a href="/go/adspower?from=webrtc&ref=${encodeURIComponent(refSource)}" target="_blank" rel="noopener" class="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">
-              免费下载 AdsPower 隔离防封浏览器 →
-            </a>
-            <button onclick="copyCode('YtPJkN', 'adspower')" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-indigo-300 text-xs font-mono">
-              复制邀请优惠码: YtPJkN
-            </button>
-          </div>`
-      });
-
-      // 3. 时区与系统语言穿帮判定
-      const sysTz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-      const sysLang = (navigator.languages || [navigator.language]).join(', ');
-      const tzMismatch = ipRes.timezone && sysTz && (ipRes.timezone !== sysTz);
-      const cnLangInForeignIp = ipRes.country !== 'CN' && sysLang.toLowerCase().includes('zh');
-      if (tzMismatch || cnLangInForeignIp) score -= 20;
-
-      cards.push({
-        level: (tzMismatch || cnLangInForeignIp) ? 'warn' : 'ok',
-        title: (tzMismatch || cnLangInForeignIp) ? '🟡 环境指纹穿帮：IP 属地与系统时区/语言冲突 (-20分)' : '🟢 时区与语言指纹一致',
-        detail: `IP 时区: ${ipRes.timezone} (${ipRes.country}) vs 本地系统时区: ${sysTz} | 浏览器语言头: ${sysLang}`,
-        advice: '顶着美国 IP 却暴露 Asia/Shanghai 时区和 zh-CN 语言头，是 Stripe 拒付虚拟卡与风控连坐的高频诱因。在 AdsPower 中勾选「基于 IP 自动匹配时区与语言」即可一键根治。',
-        ctaHtml: (tzMismatch || cnLangInForeignIp) ? `
-          <div class="mt-3">
-            <a href="/go/adspower?from=fingerprint&ref=${encodeURIComponent(refSource)}" target="_blank" rel="noopener" class="inline-block px-3.5 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition">
-              用 AdsPower 自动对齐 IP 时区与硬件指纹 →
-            </a>
-          </div>` : ''
-      });
-
-      score = Math.max(5, score);
-      const scoreEl = document.getElementById('score-num');
-      const ringEl = document.getElementById('score-ring');
-      const verdictEl = document.getElementById('verdict-badge');
-
-      scoreEl.textContent = score;
-      document.getElementById('ip-summary').textContent = `出口 IP: ${ipRes.ip} | ${ipRes.country} ${ipRes.region} | ${ipRes.asn} ${ipRes.org}`;
-
-      if (score < 60) {
-        ringEl.className = 'w-28 h-28 rounded-full border-4 border-rose-500 flex flex-col items-center justify-center bg-rose-950/30';
-        scoreEl.className = 'text-3xl font-extrabold text-rose-400';
-        verdictEl.textContent = '🚨 高危环境：切勿直接注册 Claude 或绑卡支付！';
-      } else if (score < 85) {
-        ringEl.className = 'w-28 h-28 rounded-full border-4 border-amber-500 flex flex-col items-center justify-center bg-amber-950/30';
-        scoreEl.className = 'text-3xl font-extrabold text-amber-400';
-        verdictEl.textContent = '⚠️ 存在指纹暴露隐患：建议按下方处方修复后再绑卡';
-      } else {
-        ringEl.className = 'w-28 h-28 rounded-full border-4 border-emerald-500 flex flex-col items-center justify-center bg-emerald-950/30';
-        scoreEl.className = 'text-3xl font-extrabold text-emerald-400';
-        verdictEl.textContent = '✅ 纯净环境：可安全用于海外 AI 订阅与日常使用';
-      }
-
-      document.getElementById('cards-container').innerHTML = cards.map(c => `
-        <div class="rounded-2xl p-5 border ${c.level === 'danger' ? 'bg-rose-950/20 border-rose-800/60' : c.level === 'warn' ? 'bg-amber-950/20 border-amber-800/60' : 'bg-slate-900 border-slate-800'}">
-          <h3 class="font-bold text-sm md:text-base text-white mb-1">${c.title}</h3>
-          <p class="text-xs font-mono text-slate-400 mb-2">${c.detail}</p>
-          <p class="text-xs text-slate-300 leading-relaxed">${c.advice}</p>
-          ${c.ctaHtml}
-        </div>
-      `).join('');
-    }
-
-    function toggleLang() {
-      lang = lang === 'zh' ? 'en' : 'zh';
-      document.getElementById('t-title').textContent = lang === 'en'
-        ? 'AI Account Anti-Ban & Stripe Risk Scanner'
-        : 'AI 账号防封 & Stripe 绑卡环境一键体检';
-    }
-
-    document.getElementById('gh-link').href = `/go/github?from=footer&ref=${encodeURIComponent(refSource)}`;
-    genAddress();
-    runFullScan();
-  </script>
-</body>
-</html>
+<body>
+<main class="shell">
+<header class="masthead"><a class="brand" href="/" aria-label="AI Env Guard"><span class="brand-mark" aria-hidden="true">⌁</span> AI ENV GUARD</a><button id="lang-btn" class="button subtle" type="button">中文</button></header>
+<section class="intro"><p class="eyebrow" data-i18n="eyebrow">NETWORK / BROWSER DIAGNOSTICS</p><h1 data-i18n="title">Know your environment. Understand the signals.</h1><p class="intro-copy" data-i18n="subtitle">Four checks for your AI workflow: IP, WebRTC, timezone and hardware.</p></section>
+<section class="summary panel" aria-live="polite" aria-atomic="true">
+<div id="score-ring" class="score-ring scanning"><span id="score-num">—</span><span class="score-label" data-i18n="scoreLabel">SIGNAL SCORE / 100</span></div>
+<div class="summary-copy"><p class="eyebrow" data-i18n="overview">ENVIRONMENT OVERVIEW</p><h2 id="verdict" data-i18n="scanning">Checking your environment…</h2><p id="ip-summary" class="mono"></p><p id="coverage" class="muted"></p></div>
+<div class="summary-actions"><button id="scan-btn" class="button primary" data-i18n="rescan">Run again</button><button id="report-btn" class="button" disabled data-i18n="copyReport">Copy private report</button><span class="micro" data-i18n="reportHint">No IP, location or device identifiers</span></div>
+</section>
+<div class="section-label"><h2 data-i18n="checks">Your four checks</h2><span data-i18n="localHint">Hardware stays in your browser</span></div>
+<section id="cards" class="cards" aria-label="Diagnostics"></section>
+<p class="disclosure" data-i18n="disclosure">Some links are affiliate links. We may earn a commission. A score is a diagnostic heuristic, not an account-safety or payment guarantee.</p>
+<section class="panel address-section"><div class="section-top"><div><h2 data-i18n="addressTitle">US address format examples</h2><p class="muted" data-i18n="addressHint">For format reference only. Use billing details that match your card issuer’s records.</p></div><div class="address-controls"><label for="state-select" class="sr-only" data-i18n="state">State</label><select id="state-select"><option value="OR">Oregon</option><option value="DE">Delaware</option><option value="MT">Montana</option><option value="NH">New Hampshire</option></select><button id="address-btn" class="button" data-i18n="another">Another example</button></div></div><div id="address-box" class="address-box"></div></section>
+<footer class="panel footer"><div><h2 data-i18n="terminalTitle">The terminal is a separate environment.</h2><p class="muted" data-i18n="terminalHint">Browser proxy settings may not apply to Claude Code or API clients. Inspect your local terminal configuration too.</p></div><a id="github-link" class="button" href="/go/github?from=footer" target="_blank" rel="noopener" data-i18n="github">View the CLI checker</a></footer>
+<p class="privacy" data-i18n="privacy">The IP check queries ipapi.is. WebRTC uses Google STUN. GPU and automation checks run locally; copied reports contain only check outcomes.</p>
+<noscript><p>This scanner needs JavaScript. 此检测工具需要启用 JavaScript。</p></noscript>
+</main>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<dialog id="report-dialog"><h2 data-i18n="manualCopy">Select and copy your report</h2><textarea id="report-text" readonly rows="12"></textarea><button id="close-dialog" class="button" data-i18n="close">Close</button></dialog>
+</body></html>

@@ -2,22 +2,37 @@
 
 在线网站：https://ai-env-guard.pages.dev
 
-按提供的脚本部署的 Cloudflare Pages 网站，包含浏览器环境检测、联盟链接跳转及可选飞书通知。
+中英双语的网络与浏览器环境检测工具：IP / WebRTC / 时区与语言 / WebGL、WebDriver 与逻辑线程数。
 
-## 开发与部署
+## 功能
 
-Node.js 22.12+；使用 Bun 安装锁定依赖：
+- `?lang=en` / `?lang=zh` 优先，其次使用已保存偏好，最后按浏览器语言选择；非中文语言默认英文。
+- 所有界面文案、检测结论、复制提示与报告均支持中英切换。
+- 红黄项展开方案与优惠码；绿灯项只展示轻量链接；不可用项目不推广。
+- 复制报告仅包含评分、完成度和四项结论，不含原始 IP、位置、运营商、时区、语言、显卡标识或线程数。
+- 完整 Open Graph / X 大图元数据；所有页面样式由本地 CSS 提供，无 Tailwind CDN 或外部字体请求。
+- 硬件检测在浏览器本地执行；软件渲染、虚拟显卡和 WebDriver 仅作为线索。限制 GPU 访问或低线程数不作为风险。
+
+## 开发、检查与部署
+
+需要 Node.js 22.12+、Bun 1.3.5。
 
 ```sh
 bun install --frozen-lockfile
+npm test
+npm run build
 npm run dev
-npx wrangler login
-npx wrangler pages project create ai-env-guard --production-branch=main
 npm run deploy
 ```
 
-Cloudflare Pages 直接上传会同时编译根目录的 `functions/`。
-推送 GitHub 不会自动触发部署，更新后执行 `npm run deploy`。
+`public/` 是可直接发布的静态文件；`build` 校验翻译、资源与元数据，再编译 Pages Functions。
+
+`.github/workflows/deploy.yml` 在推送 `main` 时运行测试、构建和生产部署，也支持手动触发。所需 GitHub Actions 仓库 Secrets：
+
+- `CLOUDFLARE_ACCOUNT_ID`：目标 Cloudflare 账户 ID。
+- `CLOUDFLARE_API_TOKEN`：只限目标账户的 Cloudflare Pages Edit 权限；不可提交到仓库。
+
+仍使用现有 `pages.dev` 域名。
 
 ## 可选飞书通知
 
@@ -26,12 +41,20 @@ npx wrangler pages secret put FEISHU_WEBHOOK_URL --project-name=ai-env-guard
 npm run deploy
 ```
 
-Webhook 只存储为 Cloudflare Secret，禁止提交到仓库。未配置时，联盟跳转正常工作，但不发送通知。
+未配置时，跳转及优惠码复制正常工作，但不发送飞书通知。
 
-## 原始版本的功能边界
+## 检测范围
 
-- 中英文按钮当前只切换主标题，未实现全站翻译。
-- 检测分数是启发式计算，不能预测或保证账号安全、付款成功。
-- 地址池是预置示例；付款账单资料应与本人及发卡行记录一致。
-- IP 检测会查询第三方 ipapi.is；其可用性与配额影响结果。
-- 页面样式依赖 Tailwind CDN；可选 KV 默认未启用。
+IP 检测查询 ipapi.is，4 秒超时后返回已知 ASN 信息或明确标记不可用；单个 IP 独立缓存，不能用邻居地址的信誉替代。四项数据不完整时不显示总分。语言偏好与线程数仅供查看，不扣分。分数不代表账号封禁概率或付款成功率。
+
+WebRTC 使用 Google STUN；IPv4/IPv6 地址不同不一定代表泄露。浏览器隐私限制、VPN 和网络路由可能影响可见结果。地址池仅供格式参考，不能代替本人真实账单资料。
+
+## 分享封面
+
+文件：`public/assets/social-cover.png`（1732 × 908）。使用内置 imagegen 生成。
+
+生成提示词：
+
+> Use case: ads-marketing. Create a polished Open Graph social-sharing banner for a browser/network diagnostics website called AI ENV GUARD. Landscape 1200x630 (aspect 1.905:1). Dark navy almost-black background, crisp minimalist technical dashboard aesthetic with subtle thin grid. Exact large white title: "CHECK YOUR AI ENVIRONMENT". Small brand text "AI ENV GUARD". Two contrasting side-by-side diagnostic score rings: red on the left reads "35" with caption "SIGNALS TO REVIEW"; mint green on the right reads "100" with caption "CHECKS PASSED". Bottom labels "IP • WebRTC • Timezone • Hardware" and small "Illustrative scores". Clear typography, generous padding, legible thumbnail, flat vector-style rendering, subtle glow only around rings. No promise of account safety or guaranteed payments, no third-party logos, no photos, no watermark.
+
+技术参考：[WebGL 扩展](https://developer.mozilla.org/en-US/docs/Web/API/WEBGL_debug_renderer_info)、[CPU 线程数](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/hardwareConcurrency)、[Cloudflare Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/)。
