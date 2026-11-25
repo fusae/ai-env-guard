@@ -1,0 +1,10 @@
+{
+  "name": "ai-env-guard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public --project-name=ai-env-guard --branch=main"
+  }
+}

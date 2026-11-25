@@ -1,0 +1,8 @@
+name = "ai-env-guard"
+pages_build_output_dir = "public"
+compatibility_date = "2026-11-01"
+
+# 可选：后续在 Cloudflare 后台创建 KV 命名空间后取消注释，开启 /24 网段缓存省配额
+# [[kv_namespaces]]
+# binding = "IP_CACHE"
+# id = "填入你的KV_ID"
