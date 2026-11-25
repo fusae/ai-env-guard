@@ -6,5 +6,8 @@
   "scripts": {
     "dev": "wrangler pages dev public",
     "deploy": "wrangler pages deploy public --project-name=ai-env-guard --branch=main"
+  },
+  "devDependencies": {
+    "wrangler": "4.168.0"
   }
 }
