@@ -1,5 +1,7 @@
 # AI Env Guard
 
+在线网站：https://ai-env-guard.pages.dev
+
 按提供的脚本部署的 Cloudflare Pages 网站，包含浏览器环境检测、联盟链接跳转及可选飞书通知。
 
 ## 开发与部署
