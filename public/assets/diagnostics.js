@@ -36,7 +36,8 @@ export function assess({ ip, rtc, hardware, timezone }) {
   const badIp = Boolean(ip?.isDatacenter || ip?.isProxyOrVpn);
   const publicIps = (rtc.ips || []).map(normalizeIp).filter(isPublicIp);
   const extraIps = publicIps.filter(x => x !== normalizeIp(ip?.ip));
-  const rtcKnown = Boolean(isPublicIp(ip?.ip) && rtc.status === 'complete');
+  const rtcProtected = Boolean(isPublicIp(ip?.ip) && extraIps.length === 0 && ['timeout', 'unsupported', 'error'].includes(rtc.status));
+  const rtcKnown = Boolean(isPublicIp(ip?.ip) && (rtc.status === 'complete' || extraIps.length > 0 || rtcProtected));
   const tzKnown = Boolean(timezone && ip?.timezone);
   const tzMismatch = tzKnown && timezone !== ip.timezone;
   const signals = hardwareSignals(hardware);
@@ -44,12 +45,13 @@ export function assess({ ip, rtc, hardware, timezone }) {
   const hardwarePoints = signals.includes('automation') ? 10 : signals.length ? 5 : 0;
   const cards = [
     { id:'ip', title:'ipTitle', level:!networkKnown ? 'unknown' : badIp ? 'danger' : 'ok', points:networkKnown && badIp ? 45 : 0, result:!networkKnown ? 'ipUnknown' : badIp ? 'ipBad' : 'ipGood', advice:!networkKnown ? 'ipUnknownAdvice' : badIp ? 'ipAdvice' : null, target:'proxy' },
-    { id:'rtc', title:'rtcTitle', level:!rtcKnown ? 'unknown' : extraIps.length ? 'danger' : 'ok', points:rtcKnown && extraIps.length ? 30 : 0, result:!rtcKnown ? 'rtcUnknown' : extraIps.length ? 'rtcBad' : 'rtcGood', advice:!rtcKnown ? 'rtcUnknownAdvice' : extraIps.length ? 'rtcAdvice' : null, target:'adspower', extraIps },
+    { id:'rtc', title:'rtcTitle', level:!rtcKnown ? 'unknown' : extraIps.length ? 'danger' : 'ok', points:rtcKnown && extraIps.length ? 30 : 0, result:!rtcKnown ? 'rtcUnknown' : extraIps.length ? 'rtcBad' : rtcProtected ? 'rtcProtected' : 'rtcGood', advice:!rtcKnown ? 'rtcUnknownAdvice' : extraIps.length ? 'rtcAdvice' : null, target:'adspower', extraIps },
     { id:'timezone', title:'timezoneTitle', level:!tzKnown ? 'unknown' : tzMismatch ? 'warn' : 'ok', points:tzMismatch ? 15 : 0, result:!tzKnown ? 'timezoneUnknown' : tzMismatch ? 'timezoneBad' : 'timezoneGood', advice:'timezoneAdvice', target:'adspower' },
     { id:'hardware', title:'hardwareTitle', level:!hwKnown ? 'unknown' : signals.includes('automation') ? 'danger' : signals.length ? 'warn' : 'ok', points:hardwarePoints, result:!hwKnown ? 'hardwareUnknown' : signals.length ? 'hardwareBad' : 'hardwareGood', advice:!hwKnown ? 'hardwareUnknownAdvice' : 'hardwareAdvice', target:'adspower', signals },
   ];
   const completed = cards.filter(c => c.level !== 'unknown').length;
-  const score = completed === 4 ? Math.max(0, 100 - cards.reduce((sum,c) => sum+c.points,0)) : null;
+  const coreReady = networkKnown && rtcKnown && tzKnown;
+  const score = coreReady ? Math.max(0, 100 - cards.reduce((sum,c) => sum+c.points,0)) : null;
   return { cards, completed, score, verdict:score === null ? 'partial' : score < 60 ? 'risk' : score < 100 ? 'caution' : 'clean' };
 }
 export function buildReport(result, lang) {
@@ -82,7 +84,7 @@ export function detectWebRTC(Peer = globalThis.RTCPeerConnection, timeoutMs = 35
     const finish = status => {if (finished) return;finished=true;clearTimeout(timer);try{pc?.close();}catch{}resolve({status,ips:[...ips]});};
     if (!Peer) return finish('unsupported');
     try {
-      pc = new Peer({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+      pc = new Peer({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'}]});
       timer = setTimeout(() => finish('timeout'), timeoutMs);
       pc.onicecandidate = event => {
         if (!event.candidate) return finish('complete');

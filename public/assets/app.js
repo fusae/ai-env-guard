@@ -1,5 +1,5 @@
-import { chooseLanguage, translate } from './i18n.js?v=2';
-import { assess, buildReport, detectHardware, detectWebRTC } from './diagnostics.js?v=2';
+import { chooseLanguage, translate } from './i18n.js?v=3';
+import { assess, buildReport, detectHardware, detectWebRTC } from './diagnostics.js?v=3';
 
 const $ = id => document.getElementById(id);
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -205,7 +205,7 @@ function renderSummary() {
     $('score-arc').style.opacity = '.3';
   }
   $('verdict').textContent = done ? t(result.verdict) : t('scanning');
-  $('coverage').textContent = done && score === null ? `${t('coverage', { count: result.completed })} · ${t('partialScore')}` : '';
+  $('coverage').textContent = done && score === null ? `${t('coverage', { count: result.completed })} · ${t('partialScore')}` : done && result.completed < 4 ? t('coverage', { count: result.completed }) : '';
   $('coverage').hidden = !$('coverage').textContent;
   const ip = snapshot?.ip;
   $('ip-summary').textContent = ip ? t('ipSummary', { ip: friendly(ip.ip), country: friendly(ip.country), asn: friendly(ip.asn), org: friendly(ip.org) }) : ip === null ? t('ipUnknown') : '';

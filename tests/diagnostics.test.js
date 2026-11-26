@@ -13,10 +13,13 @@ test('172 is not entirely private and IPv6 private ranges are filtered',()=>{
  for(const ip of ['10.1.1.1','172.16.0.1','172.31.255.255','192.168.1.1','169.254.1.1','127.0.0.1','100.64.0.1','fd12::1','fe80::a','::1','::ffff:192.168.1.1'])assert.equal(isPublicIp(ip),false,ip);
  for(const ip of ['172.15.1.1','172.32.1.1','172.100.1.1','8.8.8.8','2606:4700:4700::1111'])assert.equal(isPublicIp(ip),true,ip);
 });
-test('only an actually completed scan receives a full score',()=>{
+test('IP unavailability blocks scoring while blocked WebRTC and hidden GPU still score honestly',()=>{
  assert.equal(assess(valid()).score,100);
- for(const change of [{ip:null},{rtc:{status:'timeout',ips:[]}},{hardware:{webdriver:false,rendererExposed:false,renderer:''}}]){const r=assess({...valid(),...change});assert.equal(r.score,null);assert.equal(r.completed<4,true);}
- const s=valid();s.ip.lookupStatus='unavailable';assert.equal(assess(s).cards[0].level,'unknown');
+ const missingIp=assess({...valid(),ip:null});assert.equal(missingIp.score,null);assert.equal(missingIp.completed<4,true);
+ const s=valid();s.ip.lookupStatus='unavailable';assert.equal(assess(s).cards[0].level,'unknown');assert.equal(assess(s).score,null);
+ const blockedRtc=assess({...valid(),rtc:{status:'timeout',ips:[]}});assert.equal(blockedRtc.cards[1].level,'ok');assert.equal(blockedRtc.cards[1].result,'rtcProtected');assert.equal(blockedRtc.score,100);
+ const leakedOnTimeout=assess({...valid(),rtc:{status:'timeout',ips:['1.1.1.1']}});assert.equal(leakedOnTimeout.cards[1].level,'danger');assert.equal(leakedOnTimeout.score,70);
+ const hiddenGpu=assess({...valid(),hardware:{webdriver:false,rendererExposed:false,renderer:''}});assert.equal(hiddenGpu.cards[3].level,'unknown');assert.equal(hiddenGpu.completed,3);assert.equal(hiddenGpu.score,100);
 });
 test('hardware flags are evidence-based; low CPU count and hidden GPU do not imply abuse',()=>{
  assert.deepEqual(hardwareSignals({cores:1,webdriver:false}),[]);
