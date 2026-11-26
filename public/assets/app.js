@@ -1,5 +1,5 @@
-import { chooseLanguage, translate } from './i18n.js';
-import { assess, buildReport, detectHardware, detectWebRTC } from './diagnostics.js';
+import { chooseLanguage, translate } from './i18n.js?v=2';
+import { assess, buildReport, detectHardware, detectWebRTC } from './diagnostics.js?v=2';
 
 const $ = id => document.getElementById(id);
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
