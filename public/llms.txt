@@ -1,0 +1,20 @@
+# envguard.dev — AI Account Anti-Ban & Stripe Environment Risk Scanner
+
+> Free, instant browser & network diagnostic tool to detect why Anthropic Claude accounts get banned immediately or why Stripe declines virtual/credit cards on AI subscriptions (Cursor, Kiro, Claude Pro, ChatGPT Plus, Google AI).
+
+## Core Diagnostics & Pages
+
+- [Full Environment Scanner](https://envguard.dev/): Full IP ASN (ISP vs Datacenter), WebRTC STUN leak, Timezone/Locale mismatch, WebGL GPU fingerprint scanner + US 0% tax billing address helper (OR, DE, MT, NH).
+- [Claude Account Ban Check](https://envguard.dev/claude-ban-check): Diagnostic scanner for instant Claude account bans & shared VPN ASN blacklists.
+- [Stripe Card Decline Check](https://envguard.dev/stripe-decline-check): Stripe Radar fraud trigger checker (IP-timezone mismatch, high-risk hosting ASNs, tax-free OR/DE/MT/NH billing setup).
+- [Claude Code Proxy Test](https://envguard.dev/claude-code-proxy-test): Dual audit for browser + CLI environment variable leaks (paired with open-source https://github.com/fusae/claude-env-check).
+- [ISP vs Datacenter IP Test](https://envguard.dev/isp-vs-datacenter-ip): Verify true Static Residential ISP proxies vs Datacenter hosting IPs.
+
+## Diagnostic Signals & Fixes
+
+- **Datacenter / Shared VPN ASN**: Detected via Cloudflare ASN + `ipapi.is` (`is_datacenter`, `is_vpn`, `is_proxy`, `company.type`). Fix: switch to a dedicated Static Residential ISP IP.
+- **WebRTC STUN Leak**: Detected via Google STUN ICE candidate inspection comparing public candidates against exit IP. Fix: isolate profiles with an anti-detect browser container and disable WebRTC IP leaks.
+- **IP vs System Timezone Mismatch**: Compares IP geolocation timezone against `Intl.DateTimeFormat().resolvedOptions().timeZone`. Fix: sync browser/container timezone automatically to the exit IP.
+- **Browser Automation & GPU Clues**: Checks `navigator.webdriver`, WebGL `UNMASKED_RENDERER_WEBGL` (SwiftShader/llvmpipe/VMware/VirtualBox/OS mismatch).
+- **CLI Direct Proxy Leak**: Terminal tools (Claude Code, Codex CLI, API SDKs) ignore system browser proxy rules unless `HTTP_PROXY`/`HTTPS_PROXY` are explicitly configured; audit with `github.com/fusae/claude-env-check`.
+- **US 0% Sales Tax Billing Reference**: Built-in reference for Oregon (OR), Delaware (DE), Montana (MT), and New Hampshire (NH) ZIP/city formats aligned with matching US exit IP regions for Stripe checkout.

@@ -1,0 +1,51 @@
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /go/
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /go/
+Disallow: /api/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /go/
+Disallow: /api/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /go/
+Disallow: /api/
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /go/
+Disallow: /api/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /go/
+Disallow: /api/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /go/
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /go/
+Disallow: /api/
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /go/
+Disallow: /api/
+
+User-agent: *
+Allow: /
+Disallow: /go/
+Disallow: /api/
+
+Sitemap: https://envguard.dev/sitemap.xml

@@ -139,6 +139,38 @@ h1 { font-size: clamp(28px, 4.7vw, 46px); line-height: 1.15; letter-spacing: -.0
 .danger .cta .offer { background: var(--danger-bg); border-color: var(--danger-line); }
 .warn .cta .offer { background: var(--warn-bg); border-color: var(--warn-line); }
 
+/* ---------- Static GEO knowledge matrix & tax helper ---------- */
+.geo-section { margin-top: 24px; padding: 24px; }
+.geo-section h2 { font-size: 18px; line-height: 1.4; margin-bottom: 8px; }
+.geo-section h3 { font-size: 15px; line-height: 1.4; margin: 22px 0 10px; }
+.geo-lead { font-size: 14px; line-height: 1.65; color: var(--body); margin-bottom: 16px; }
+.geo-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 10px; }
+.geo-table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.6; min-width: 640px; }
+.geo-table th, .geo-table td { text-align: left; padding: 11px 13px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.geo-table thead th { background: var(--raised); color: var(--text); font-weight: 700; font-size: 12px; letter-spacing: .02em; }
+.geo-table tbody tr:last-child td { border-bottom: 0; }
+.geo-table td { color: var(--body); }
+.geo-table td:first-child { color: var(--text); font-weight: 600; white-space: nowrap; }
+.geo-table a { color: var(--mint); text-decoration: underline; text-underline-offset: 3px; }
+.geo-table code { font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; background: var(--raised); padding: 1px 5px; border-radius: 4px; color: var(--text); }
+
+.tax-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.tax-card { border: 1px solid var(--line); border-radius: 10px; background: var(--field); padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.tax-card strong { font-size: 14px; color: var(--text); }
+.tax-card .mono { font-size: 12px; line-height: 1.5; margin: 0; }
+.tax-card .tax-copy { margin-top: auto; padding: 7px 10px; font-size: 12px; width: 100%; }
+
+.guide-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.guide-links a { font-size: 13px; color: var(--body); border: 1px solid var(--line); background: var(--field); border-radius: 8px; padding: 7px 11px; transition: border-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out); }
+@media (hover: hover) { .guide-links a:hover { border-color: var(--mint); color: var(--text); } }
+
+.landing-guide { margin-top: 24px; padding: 24px; }
+.landing-guide h2 { font-size: 19px; line-height: 1.4; margin-bottom: 12px; }
+.landing-guide p { font-size: 14px; line-height: 1.75; color: var(--body); margin-bottom: 12px; }
+.landing-guide p:last-child { margin-bottom: 0; }
+.landing-guide a { color: var(--mint); text-decoration: underline; text-underline-offset: 3px; }
+.landing-guide code { font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; background: var(--raised); padding: 1px 5px; border-radius: 4px; color: var(--text); }
+
 /* ---------- Footer ---------- */
 .footer { display: flex; gap: 28px; align-items: center; justify-content: space-between; padding: 22px 24px; margin-top: 18px; }
 .footer h2 { margin: 0; font-size: 15px; line-height: 1.5; }
@@ -176,6 +208,7 @@ textarea { width: 100%; background: var(--field); color: var(--text); border: 1p
   .score { width: 110px; height: 110px; }
   #score-num { font-size: 36px; }
   .summary-actions { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; min-width: 0; }
+  .tax-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer { align-items: start; flex-direction: column; gap: 16px; }
 }
 @media (max-width: 480px) {
@@ -191,6 +224,8 @@ textarea { width: 100%; background: var(--field); color: var(--text); border: 1p
   .badge { font-size: 10px; }
   .brand { font-size: 12px; }
   .cta .button { width: 100%; }
+  .geo-section, .landing-guide { padding: 18px 16px; }
+  .tax-grid { grid-template-columns: 1fr; }
 }
 
 /* ---------- Reduced motion: state still changes, nothing travels ---------- */

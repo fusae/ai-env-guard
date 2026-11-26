@@ -7,7 +7,7 @@
     "dev": "wrangler pages dev public",
     "deploy": "wrangler pages deploy public --project-name=ai-env-guard --branch=main",
     "test": "node --test tests/*.test.js",
-    "build": "node scripts/check.mjs && wrangler pages functions build functions --outdir .wrangler/build"
+    "build": "node scripts/build-pages.mjs && node scripts/check.mjs && wrangler pages functions build functions --outdir .wrangler/build"
   },
   "devDependencies": {
     "wrangler": "4.168.0"

@@ -103,7 +103,7 @@ function pendingIds() {
 }
 function detail(card) {
   const { ip, rtc, hardware: h, timezone, languages } = snapshot;
-  if (card.id === 'ip') return ip && card.level !== 'unknown' ? t('ipDetail', { type: ip.ipType === 'hosting' ? t('hostingType') : ip.ipType === 'isp' ? t('ispType') : friendly(ip.ipType) }) : '';
+  if (card.id === 'ip') return ip && card.level !== 'unknown' ? t('ipDetail', { type: ip.ipType === 'hosting' ? t('hostingType') : ip.ipType === 'isp' ? t('ispType') : ip.ipType === 'business' ? t('businessType') : friendly(ip.ipType) }) : '';
   if (card.id === 'rtc') return card.level !== 'unknown' && card.extraIps.length ? t('rtcDetail', { ips: card.extraIps.join(', ') }) : '';
   if (card.id === 'timezone') return t('timezoneDetail', { remote: friendly(ip?.timezone), local: friendly(timezone), languages: friendly(languages) });
   const data = t('hardwareDetail', { vendor: friendly(h.vendor), renderer: friendly(h.renderer), cores: h.cores || t('unknownValue'), webdriver: h.webdriver === true ? t('yes') : h.webdriver === false ? t('no') : t('unknownValue') });
@@ -249,11 +249,14 @@ const autoScan = () => runScan({ queue: true });
 
 /* ---------- Wiring ---------- */
 function applyLanguage() {
+  const isLanding = document.documentElement.dataset.landing === 'true';
   document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-  document.title = t('pageTitle');
-  document.querySelector('meta[name="description"]').content = t('description');
-  for (const s of ['meta[property="og:title"]', 'meta[name="twitter:title"]']) document.querySelector(s).content = t('pageTitle');
-  for (const s of ['meta[property="og:description"]', 'meta[name="twitter:description"]']) document.querySelector(s).content = t('description');
+  if (!isLanding) {
+    document.title = t('pageTitle');
+    document.querySelector('meta[name="description"]').content = t('description');
+    for (const s of ['meta[property="og:title"]', 'meta[name="twitter:title"]']) document.querySelector(s).content = t('pageTitle');
+    for (const s of ['meta[property="og:description"]', 'meta[name="twitter:description"]']) document.querySelector(s).content = t('description');
+  }
   document.querySelector('meta[property="og:locale"]').content = lang === 'zh' ? 'zh_CN' : 'en_US';
   document.querySelector('meta[property="og:locale:alternate"]').content = lang === 'zh' ? 'en_US' : 'zh_CN';
   for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
@@ -273,6 +276,9 @@ $('lang-btn').addEventListener('click', () => {
 });
 $('scan-btn').addEventListener('click', () => runScan());
 $('report-btn').addEventListener('click', () => { if (result) copy(buildReport(result, lang), $('report-btn'), { report: true }); });
+for (const btn of document.querySelectorAll('[data-copy]')) {
+  btn.addEventListener('click', () => copy(btn.dataset.copy, btn));
+}
 $('close-dialog').addEventListener('click', () => $('report-dialog').close());
 // Clicking the dimmed backdrop closes the dialog; clicks on the dialog's own padding do not.
 $('report-dialog').addEventListener('click', e => {
