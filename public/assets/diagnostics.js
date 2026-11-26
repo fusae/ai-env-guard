@@ -58,7 +58,7 @@ export function buildReport(result, lang) {
     t(lang,'coverage',{count:result.completed}),
     ...result.cards.map((c,i) => `${t(lang,'reportLabels')[i]}: ${t(lang,c.level)}`),
     '',t(lang,'reportPrivacy'),
-    `${t(lang,'reportLink')}: https://ai-env-guard.pages.dev/?ref=report&lang=${lang === 'zh' ? 'zh' : 'en'}`].join('\n');
+    `${t(lang,'reportLink')}: https://envguard.dev/?ref=report&lang=${lang === 'zh' ? 'zh' : 'en'}`].join('\n');
 }
 export function detectHardware(nav = navigator, doc = document) {
   const h = {webdriver:typeof nav.webdriver === 'boolean' ? nav.webdriver : null, cores:nav.hardwareConcurrency || null, os:nav.userAgentData?.platform || nav.platform || '', vendor:'', renderer:'', rendererExposed:false};

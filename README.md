@@ -1,6 +1,6 @@
 # AI Env Guard
 
-在线网站：https://ai-env-guard.pages.dev
+在线网站：https://envguard.dev
 
 中英双语的网络与浏览器环境检测工具：IP / WebRTC / 时区与语言 / WebGL、WebDriver 与逻辑线程数。
 
@@ -32,7 +32,7 @@ npm run deploy
 - `CLOUDFLARE_ACCOUNT_ID`：目标 Cloudflare 账户 ID。
 - `CLOUDFLARE_API_TOKEN`：只限目标账户的 Cloudflare Pages Edit 权限；不可提交到仓库。
 
-仍使用现有 `pages.dev` 域名。
+正式域名为 `envguard.dev`；Cloudflare Pages 原始地址仍可访问。
 
 ## IP 检测 API Key（ipapi.is）
 

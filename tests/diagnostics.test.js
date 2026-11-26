@@ -31,7 +31,7 @@ test('different public addresses are reported, private candidates are ignored',(
 });
 test('report has a fixed clean link and never includes raw identifying fields',()=>{
  const s=valid();s.rtc.ips=['1.1.1.1'];const r=assess(s);
- for(const lang of ['zh','en']){const report=buildReport(r,lang);for(const secret of ['8.8.8.8','1.1.1.1','SECRET_ISP','SECRET_COUNTRY','SECRET_TIMEZONE','SECRET_GPU','SECRET_VENDOR','SECRET_LANGUAGE'])assert(!report.includes(secret),secret);assert(report.endsWith(`https://ai-env-guard.pages.dev/?ref=report&lang=${lang}`));}
+ for(const lang of ['zh','en']){const report=buildReport(r,lang);for(const secret of ['8.8.8.8','1.1.1.1','SECRET_ISP','SECRET_COUNTRY','SECRET_TIMEZONE','SECRET_GPU','SECRET_VENDOR','SECRET_LANGUAGE'])assert(!report.includes(secret),secret);assert(report.endsWith(`https://envguard.dev/?ref=report&lang=${lang}`));}
 });
 test('WebRTC timeout and offer failures close the connection',async()=>{
  let closed=0;
