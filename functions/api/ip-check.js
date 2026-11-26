@@ -1,3 +1,17 @@
+const DATACENTER_ASNS = new Set([
+  132203, 45090, // Tencent Cloud
+  45102, 37963,  // Alibaba Cloud
+  16509, 14618,  // Amazon AWS
+  396982,        // Google Cloud
+  8075,          // Microsoft Azure
+  14061,         // DigitalOcean
+  20473,         // Vultr / Choopa
+  24940,         // Hetzner
+  16276,         // OVH
+  63949,         // Linode / Akamai
+  31898          // Oracle Cloud
+]);
+
 const DATACENTER_KEYWORDS = [
   'amazon', 'aws', 'google', 'gcp', 'microsoft', 'azure', 'digitalocean',
   'linode', 'akamai', 'vultr', 'choopa', 'hetzner', 'ovh', 'contabo',
@@ -19,7 +33,7 @@ export async function onRequestGet(context) {
 
   // 先用 Cloudflare 原生 ASN 做毫秒级初筛
   const lowerOrg = asOrg.toLowerCase();
-  let isDatacenter = DATACENTER_KEYWORDS.some(k => lowerOrg.includes(k));
+  let isDatacenter = DATACENTER_ASNS.has(Number(asn)) || DATACENTER_KEYWORDS.some(k => lowerOrg.includes(k));
   let isProxyOrVpn = false;
   let abuserScore = isDatacenter ? 'High (Datacenter ASN)' : 'Low';
   let ipType = isDatacenter ? 'hosting' : 'unknown';
@@ -31,7 +45,10 @@ export async function onRequestGet(context) {
   try {
     let cached = env.IP_CACHE ? await env.IP_CACHE.get(subnetKey, 'json') : null;
     if (!cached && clientIp !== '127.0.0.1') {
-      const resp = await fetch(`https://api.ipapi.is/?q=${clientIp}`, {
+      const apiUrl = new URL('https://api.ipapi.is/');
+      apiUrl.searchParams.set('q', clientIp);
+      if (env.IPAPI_IS_KEY) apiUrl.searchParams.set('key', env.IPAPI_IS_KEY);
+      const resp = await fetch(apiUrl.toString(), {
         headers: { 'Accept': 'application/json' },
         signal: AbortSignal.timeout(4000),
         cf: { cacheTtl: 86400, cacheEverything: true }

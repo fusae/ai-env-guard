@@ -34,6 +34,17 @@ npm run deploy
 
 仍使用现有 `pages.dev` 域名。
 
+## IP 检测 API Key（ipapi.is）
+
+`ipapi.is` 无 Key 请求只返回基础地理信息，不包含机房/代理/VPN 字段。请在 Cloudflare Pages 配置免费账号的 `IPAPI_IS_KEY`（每天 1,000 次完整查询）：
+
+```sh
+npx wrangler pages secret put IPAPI_IS_KEY --project-name=ai-env-guard
+npm run deploy
+```
+
+建议同时在 [wrangler.toml](wrangler.toml) 中启用 `IP_CACHE` KV 命名空间，按单 IP 缓存 24 小时以节省每日配额。
+
 ## 可选飞书通知
 
 ```sh
