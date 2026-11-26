@@ -7,7 +7,8 @@ const TARGET_MAP = {
 export async function onRequestGet(context) {
   const { request, params, env } = context;
   const targetKey = params.target;
-  const destUrl = TARGET_MAP[targetKey] || TARGET_MAP.proxy;
+  const destUrl = Object.hasOwn(TARGET_MAP, targetKey) ? TARGET_MAP[targetKey] : null;
+  if (!destUrl) return new Response('Not found', { status: 404 });
 
   const url = new URL(request.url);
   const fromIssue = url.searchParams.get('from') || 'direct';

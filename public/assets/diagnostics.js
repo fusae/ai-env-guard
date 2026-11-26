@@ -43,8 +43,8 @@ export function assess({ ip, rtc, hardware, timezone }) {
   const hwKnown = signals.length > 0 || Boolean(hardware.renderer && hardware.rendererExposed && typeof hardware.webdriver === 'boolean');
   const hardwarePoints = signals.includes('automation') ? 10 : signals.length ? 5 : 0;
   const cards = [
-    { id:'ip', title:'ipTitle', level:!networkKnown ? 'unknown' : badIp ? 'danger' : 'ok', points:networkKnown && badIp ? 45 : 0, result:!networkKnown ? 'ipUnknown' : badIp ? 'ipBad' : 'ipGood', advice:!networkKnown ? 'ipUnknownAdvice' : badIp ? 'ipAdvice' : 'ipGoodAdvice', target:'proxy' },
-    { id:'rtc', title:'rtcTitle', level:!rtcKnown ? 'unknown' : extraIps.length ? 'danger' : 'ok', points:rtcKnown && extraIps.length ? 30 : 0, result:!rtcKnown ? 'rtcUnknown' : extraIps.length ? 'rtcBad' : 'rtcGood', advice:!rtcKnown ? 'rtcUnknownAdvice' : extraIps.length ? 'rtcAdvice' : 'rtcGoodAdvice', target:'adspower', extraIps },
+    { id:'ip', title:'ipTitle', level:!networkKnown ? 'unknown' : badIp ? 'danger' : 'ok', points:networkKnown && badIp ? 45 : 0, result:!networkKnown ? 'ipUnknown' : badIp ? 'ipBad' : 'ipGood', advice:!networkKnown ? 'ipUnknownAdvice' : badIp ? 'ipAdvice' : null, target:'proxy' },
+    { id:'rtc', title:'rtcTitle', level:!rtcKnown ? 'unknown' : extraIps.length ? 'danger' : 'ok', points:rtcKnown && extraIps.length ? 30 : 0, result:!rtcKnown ? 'rtcUnknown' : extraIps.length ? 'rtcBad' : 'rtcGood', advice:!rtcKnown ? 'rtcUnknownAdvice' : extraIps.length ? 'rtcAdvice' : null, target:'adspower', extraIps },
     { id:'timezone', title:'timezoneTitle', level:!tzKnown ? 'unknown' : tzMismatch ? 'warn' : 'ok', points:tzMismatch ? 15 : 0, result:!tzKnown ? 'timezoneUnknown' : tzMismatch ? 'timezoneBad' : 'timezoneGood', advice:'timezoneAdvice', target:'adspower' },
     { id:'hardware', title:'hardwareTitle', level:!hwKnown ? 'unknown' : signals.includes('automation') ? 'danger' : signals.length ? 'warn' : 'ok', points:hardwarePoints, result:!hwKnown ? 'hardwareUnknown' : signals.length ? 'hardwareBad' : 'hardwareGood', advice:!hwKnown ? 'hardwareUnknownAdvice' : 'hardwareAdvice', target:'adspower', signals },
   ];
@@ -57,7 +57,7 @@ export function buildReport(result, lang) {
   return [t(lang,'reportTitle'), result.score === null ? t(lang,'reportNoScore') : t(lang,'reportScore',{score:result.score}),
     t(lang,'coverage',{count:result.completed}),
     ...result.cards.map((c,i) => `${t(lang,'reportLabels')[i]}: ${t(lang,c.level)}`),
-    '',t(lang,'reportPrivacy'),t(lang,'reportLimit'),
+    '',t(lang,'reportPrivacy'),
     `${t(lang,'reportLink')}: https://ai-env-guard.pages.dev/?ref=report&lang=${lang === 'zh' ? 'zh' : 'en'}`].join('\n');
 }
 export function detectHardware(nav = navigator, doc = document) {

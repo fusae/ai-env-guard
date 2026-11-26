@@ -12,3 +12,9 @@ test('completed lookup is marked available and bounded by an abort signal',async
 test('upstream failure retains a positive datacenter ASN indication',async()=>{
  const old=globalThis.fetch;try{globalThis.fetch=async()=>{throw Error('timeout');};const ctx=context();ctx.request.cf.asOrganization='Amazon AWS';const data=await(await onRequestGet(ctx)).json();assert.equal(data.lookupStatus,'asn-only');assert.equal(data.isDatacenter,true);}finally{globalThis.fetch=old;}
 });
+import {onRequestGet as go} from '../functions/go/[target].js';
+test('unknown redirect target is rejected instead of defaulting to an affiliate link',async()=>{
+ const ctx=t=>({request:new Request(`https://example.test/go/${t}`),params:{target:t},env:{}});
+ for(const bad of ['nope','constructor','toString','__proto__'])assert.equal((await go(ctx(bad))).status,404,bad);
+ assert.equal((await go(ctx('github'))).status,302);
+});
